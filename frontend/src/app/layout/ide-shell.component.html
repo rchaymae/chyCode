@@ -1,0 +1,38 @@
+<div class="shell" [class.no-explorer]="!showExplorer()">
+  <nav class="rail" aria-label="Main">
+    <span class="logo" aria-hidden="true">&lt;/&gt;</span>
+    <button type="button" class="rail-btn" [class.on]="showExplorer()" aria-label="Toggle file explorer" title="Files" (click)="showExplorer.set(!showExplorer())">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M3 6.5A1.5 1.5 0 0 1 4.5 5H9l2 2.5h8.5A1.5 1.5 0 0 1 21 9v9.5a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18.5z"/></svg>
+    </button>
+    <button type="button" class="rail-btn" [class.on]="showTerminal()" aria-label="Toggle terminal" title="Terminal" (click)="showTerminal.set(!showTerminal())">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="15" rx="2"/><path d="m7 10 3 2.5L7 15M12.5 15H17"/></svg>
+    </button>
+    <span class="grow"></span>
+    <a class="rail-btn" routerLink="/settings" aria-label="Model connection settings" title="Model connection">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+    </a>
+  </nav>
+
+  @if (showExplorer()) { <chy-file-explorer class="explorer" /> }
+
+  <section class="center" [class.with-terminal]="showTerminal()">
+    <chy-editor />
+    @if (showTerminal()) { <chy-terminal /> }
+  </section>
+
+  <aside class="agent" aria-label="Agent">
+    <div class="agent-tabs" role="tablist">
+      <button type="button" role="tab" [attr.aria-selected]="tab() === 'chat'" [class.active]="tab() === 'chat'" (click)="tab.set('chat')">Chat</button>
+      <button type="button" role="tab" [attr.aria-selected]="tab() === 'specs'" [class.active]="tab() === 'specs'" (click)="tab.set('specs')">Specs</button>
+    </div>
+    <chy-chat [hidden]="tab() !== 'chat'" />
+    <chy-specs [hidden]="tab() !== 'specs'" (askAgent)="askAgent($event)" />
+  </aside>
+
+  <footer class="status">
+    <span>chyCode</span>
+    <span class="grow"></span>
+    @if (mock) { <span class="pill">Sample data</span> }
+    <a routerLink="/settings">{{ settings.llm().provider }} · {{ settings.llm().model }}</a>
+  </footer>
+</div>

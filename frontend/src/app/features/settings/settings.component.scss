@@ -1,0 +1,9 @@
+:host { display: block; height: 100%; overflow-y: auto; background: var(--ink-0); }
+main { max-width: 480px; margin: 0 auto; padding: 40px 20px; }
+.back { color: var(--text-dim); text-decoration: none; &:hover { color: var(--text); } }
+h1 { margin: 20px 0 6px; font-size: 24px; font-weight: 600; }
+.lead { margin: 0 0 24px; color: var(--text-dim); }
+.form { display: flex; flex-direction: column; gap: 16px; }
+.actions { display: flex; align-items: center; gap: 12px; margin-top: 4px; }
+.ok { color: var(--add); }
+.bad { color: var(--remove); }

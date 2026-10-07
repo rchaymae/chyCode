@@ -1,0 +1,39 @@
+<main>
+  <a routerLink="/" class="back">Back to workspace</a>
+  <h1>Model connection</h1>
+  <p class="lead">Choose the language model the agent uses. Ollama runs on your own machine and needs no key.</p>
+
+  <div class="form">
+    <div class="field">
+      <label for="provider">Provider</label>
+      <select id="provider" [value]="draft().provider" (change)="setProvider($any($event.target).value)">
+        @for (p of providers; track p.id) {
+          <option [value]="p.id" [selected]="p.id === draft().provider">{{ p.label }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="url">Server address</label>
+      <input id="url" type="url" [value]="draft().baseUrl" (input)="set('baseUrl', $any($event.target).value)">
+    </div>
+
+    <div class="field">
+      <label for="model">Model name</label>
+      <input id="model" type="text" [value]="draft().model" (input)="set('model', $any($event.target).value)">
+    </div>
+
+    @if (needsKey()) {
+      <div class="field">
+        <label for="key">API key</label>
+        <input id="key" type="password" autocomplete="off" [value]="draft().apiKey" (input)="set('apiKey', $any($event.target).value)">
+      </div>
+    }
+
+    <div class="actions">
+      <button type="button" class="btn primary" (click)="save()">Save connection</button>
+      @if (saved()) { <span class="ok">Saved</span> }
+      @if (error(); as err) { <span class="bad">{{ err }}</span> }
+    </div>
+  </div>
+</main>

@@ -1,0 +1,75 @@
+<div class="scroller" #scroller>
+  @if (chat.messages().length === 0) {
+    <div class="empty">
+      <h2>What do you want to build?</h2>
+      <p>Describe it in plain words. The agent reads and edits your files, and you review every change before it is applied.</p>
+      <div class="chips">
+        @for (s of suggestions; track s) {
+          <button type="button" class="chip" (click)="send(s)">{{ s }}</button>
+        }
+      </div>
+    </div>
+  }
+
+  @for (m of chat.messages(); track m.id) {
+    @if (m.role === 'user') {
+      <div class="user">{{ m.text }}</div>
+    } @else {
+      <article class="agent" aria-live="polite">
+        @if (m.steps.length) {
+          <ol class="thread">
+            @for (s of m.steps; track s.id) {
+              <li [class]="s.status">
+                <span class="node" aria-hidden="true"></span>
+                <div>
+                  <div class="step-title">{{ s.summary }}</div>
+                  @if (s.output) { <div class="step-out">{{ s.output }}</div> }
+                </div>
+              </li>
+            }
+          </ol>
+        }
+
+        @for (b of blocks(m.text); track $index) {
+          @if (b.code) { <pre class="code"><code>{{ b.text }}</code></pre> } @else { <p class="prose">{{ b.text }}</p> }
+        }
+
+        @for (c of m.changes; track c.id) {
+          <div class="change" [class]="c.status">
+            <div class="change-path">{{ c.path }}</div>
+            @if (c.status === 'pending') {
+              <div class="change-actions">
+                <button type="button" class="btn" (click)="review(c)">Review changes</button>
+                <button type="button" class="btn primary" (click)="chat.accept(c)">Accept</button>
+                <button type="button" class="btn ghost" (click)="chat.reject(c)">Reject</button>
+              </div>
+            } @else {
+              <div class="change-state">{{ c.status === 'accepted' ? 'Applied to your project' : 'Rejected' }}</div>
+            }
+          </div>
+        }
+
+        @if (m.error) { <p class="err">{{ m.error }}</p> }
+        @if (m.streaming && !m.text && !m.steps.length) { <p class="prose dim">Thinking…</p> }
+      </article>
+    }
+  }
+</div>
+
+<div class="composer">
+  <textarea
+    rows="2"
+    placeholder="Ask the agent to build or change something"
+    aria-label="Message to the agent"
+    [value]="draft()"
+    (input)="draft.set($any($event.target).value)"
+    (keydown)="onKey($event)"></textarea>
+  <div class="row">
+    <span class="hint">Enter to send · Shift+Enter for a new line</span>
+    @if (chat.busy()) {
+      <button type="button" class="btn" (click)="chat.stop()">Stop</button>
+    } @else {
+      <button type="button" class="btn primary" [disabled]="!draft().trim()" (click)="send()">Send</button>
+    }
+  </div>
+</div>

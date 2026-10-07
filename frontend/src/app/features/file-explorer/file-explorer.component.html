@@ -1,0 +1,24 @@
+<div class="head">Files</div>
+
+@if (store.error(); as err) {
+  <p class="error">{{ err }}</p>
+}
+
+<ul role="tree">
+  @for (row of rows(); track row.node.path) {
+    <li role="treeitem" [attr.aria-expanded]="row.node.type === 'dir' ? isOpen(row.node.path) : null">
+      <button
+        type="button"
+        class="row"
+        [class.active]="store.activePath() === row.node.path"
+        [style.padding-left.px]="12 + row.depth * 14"
+        (click)="activate(row)">
+        <span class="glyph" aria-hidden="true">
+          @if (row.node.type === 'dir') { {{ isOpen(row.node.path) ? '▾' : '▸' }} } @else { · }
+        </span>
+        <span class="name">{{ row.node.name }}</span>
+        @if (store.dirty().has(row.node.path)) { <span class="dot" title="Unsaved changes"></span> }
+      </button>
+    </li>
+  }
+</ul>

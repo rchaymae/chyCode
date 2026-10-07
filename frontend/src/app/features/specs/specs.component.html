@@ -1,0 +1,42 @@
+<div class="tabs" role="tablist">
+  @for (k of kinds; track k) {
+    <button type="button" role="tab" [attr.aria-selected]="kind() === k" [class.active]="kind() === k" (click)="select(k)">
+      {{ labels[k] }}
+    </button>
+  }
+</div>
+
+<div class="body">
+  @if (current(); as doc) {
+    <div class="status" [class.approved]="doc.approved">
+      {{ doc.approved ? 'Approved' : 'Waiting for your approval' }}
+    </div>
+
+    <textarea
+      aria-label="Spec text"
+      spellcheck="false"
+      [value]="draft()"
+      (input)="draft.set($any($event.target).value)"></textarea>
+
+    @if (kind() === 'tasks' && tasks().length) {
+      <ul class="tasks">
+        @for (t of tasks(); track $index) {
+          <li [class.done]="t.done">
+            <span class="box" aria-hidden="true">{{ t.done ? '✓' : '' }}</span>
+            <span class="title">{{ t.title }}</span>
+            @if (!t.done) { <button type="button" class="btn ghost" (click)="runTask(t)">Run task</button> }
+          </li>
+        }
+      </ul>
+    }
+
+    <div class="actions">
+      <button type="button" class="btn ghost" (click)="draftWithAgent()">Draft with the agent</button>
+      <span class="spacer"></span>
+      <button type="button" class="btn" [disabled]="saving()" (click)="save()">Save</button>
+      <button type="button" class="btn primary" [disabled]="saving() || doc.approved" (click)="approve()">Approve</button>
+    </div>
+  } @else {
+    <p class="empty">No spec yet. Ask the agent to draft one from your idea.</p>
+  }
+</div>

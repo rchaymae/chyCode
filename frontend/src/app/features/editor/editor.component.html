@@ -1,0 +1,38 @@
+<div class="tabs" role="tablist">
+  @for (path of store.tabs(); track path) {
+    <div class="tab" role="presentation" [class.active]="store.activePath() === path && !store.reviewing()">
+      <button type="button" role="tab" class="label" [attr.aria-selected]="store.activePath() === path" (click)="store.open(path)">
+        {{ name(path) }}
+        @if (store.dirty().has(path)) { <span class="dot" title="Unsaved changes"></span> }
+      </button>
+      <button type="button" class="close" [attr.aria-label]="'Close ' + name(path)" (click)="store.close(path)">×</button>
+    </div>
+  }
+  @if (store.reviewing(); as change) {
+    <div class="tab active review">
+      <span class="label">Review: {{ name(change.path) }}</span>
+    </div>
+  }
+</div>
+
+@if (store.reviewing(); as change) {
+  <div class="review-bar">
+    <span>The agent wants to change <strong>{{ change.path }}</strong></span>
+    <span class="spacer"></span>
+    <button type="button" class="btn ghost" (click)="reject()">Reject</button>
+    <button type="button" class="btn primary" (click)="accept()">Accept change</button>
+  </div>
+}
+
+<div class="surface">
+  <div class="host" #editorHost [class.hidden]="store.reviewing() || !store.activePath()"></div>
+  <div class="host" #diffHost [class.hidden]="!store.reviewing()"></div>
+
+  @if (loadError(); as err) {
+    <div class="empty"><p>{{ err }}</p><p class="hint">Check that monaco-editor is installed and angular.json copies it to assets/monaco.</p></div>
+  } @else if (!store.activePath() && !store.reviewing()) {
+    <div class="empty">
+      <p>Open a file from the explorer, or ask the agent to build something.</p>
+    </div>
+  }
+</div>

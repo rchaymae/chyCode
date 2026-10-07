@@ -1,0 +1,17 @@
+# Local dev services: PostgreSQL + Ollama
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: chycode
+      POSTGRES_USER: chycode
+      POSTGRES_PASSWORD: chycode
+    ports: ["5432:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+  ollama:
+    image: ollama/ollama
+    ports: ["11434:11434"]
+    volumes: [ollama:/root/.ollama]
+volumes:
+  pgdata:
+  ollama:
